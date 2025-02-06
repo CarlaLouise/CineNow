@@ -45,10 +45,13 @@ class MainActivity : ComponentActivity() {
             CineNowTheme {
                 var nowPlayingMovies by remember { mutableStateOf<List<MovieDto>>(emptyList()) }
                 var topRatedMovies by remember { mutableStateOf<List<MovieDto>>(emptyList()) }
+                var populardMovies by remember { mutableStateOf<List<MovieDto>>(emptyList()) }
+                var upComingMovies by remember { mutableStateOf<List<MovieDto>>(emptyList()) }
+
 
                 val apiService = RetrofitClient.retrofitInstance.create(ApiService::class.java)
-                val callNowPlaying = apiService.getNowPlayingMovies()
 
+                val callNowPlaying = apiService.getNowPlayingMovies()
                 callNowPlaying.enqueue(object : Callback<MovieResponse> {
                     override fun onResponse(
                         call: Call<MovieResponse>,
@@ -92,6 +95,50 @@ class MainActivity : ComponentActivity() {
 
                 })
 
+                val callPopularMovies = apiService.getPopularMovies()
+                callPopularMovies.enqueue(object :  Callback<MovieResponse> {
+                    override fun onResponse(
+                        call: Call<MovieResponse>,
+                        response: Response<MovieResponse>
+                    ) {
+                        if (response.isSuccessful) {
+                            val movies = response.body()?.results
+                            if (movies != null) {
+                                populardMovies = movies
+                            }
+                        } else {
+                            Log.d("MainActivity", "Request Error:: ${response.errorBody()}")
+                        }
+                    }
+
+                    override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
+                        Log.d("MainActivity", "NetWork Error:: ${t.message}")
+                    }
+
+                })
+
+                val callUpComingMovies = apiService.getUpComingMovies()
+                callUpComingMovies.enqueue(object : Callback<MovieResponse> {
+                    override fun onResponse(
+                        call: Call<MovieResponse>,
+                        response: Response<MovieResponse>
+                    ) {
+                        if (response.isSuccessful) {
+                            val movies = response.body()?.results
+                            if (movies != null) {
+                                upComingMovies = movies
+                            }
+                        } else {
+                            Log.d("MainActivity", "Request Error:: ${response.errorBody()}")
+                        }
+                    }
+
+                    override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
+                        Log.d("MainActivity", "NetWork Error:: ${t.message}")
+                    }
+
+                })
+
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -111,8 +158,24 @@ class MainActivity : ComponentActivity() {
                         )
 
                         MovieSession(
+                            label = "Popular",
+                            movieList = populardMovies,
+                            onClick = { movieClicked ->
+
+                            }
+                        )
+
+                        MovieSession(
                             label = "Top rated",
                             movieList = topRatedMovies,
+                            onClick = { movieClicked ->
+
+                            }
+                        )
+
+                        MovieSession(
+                            label = "UpComing",
+                            movieList = upComingMovies,
                             onClick = { movieClicked ->
 
                             }
