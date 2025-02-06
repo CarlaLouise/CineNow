@@ -44,12 +44,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             CineNowTheme {
                 var nowPlayingMovies by remember { mutableStateOf<List<MovieDto>>(emptyList()) }
-                var upcomingMovies by remember { mutableStateOf<List<MovieDto>>(emptyList()) }
+                var topRatedMovies by remember { mutableStateOf<List<MovieDto>>(emptyList()) }
 
                 val apiService = RetrofitClient.retrofitInstance.create(ApiService::class.java)
                 val callNowPlaying = apiService.getNowPlayingMovies()
-
-
 
                 callNowPlaying.enqueue(object : Callback<MovieResponse> {
                     override fun onResponse(
@@ -72,8 +70,8 @@ class MainActivity : ComponentActivity() {
 
                 })
 
-                val callUpcomingMovies = apiService.getUpcomingMovies()
-                callUpcomingMovies.enqueue(object : Callback<MovieResponse> {
+                val callTopRatedMovies = apiService.getTopRatedMovies()
+                callTopRatedMovies.enqueue(object : Callback<MovieResponse> {
                     override fun onResponse(
                         call: Call<MovieResponse>,
                         response: Response<MovieResponse>
@@ -81,7 +79,7 @@ class MainActivity : ComponentActivity() {
                         if (response.isSuccessful) {
                             val movies = response.body()?.results
                             if (movies != null) {
-                                upcomingMovies = movies
+                                topRatedMovies = movies
                             }
                         } else {
                             Log.d("MainActivity", "Request Error:: ${response.errorBody()}")
@@ -113,8 +111,8 @@ class MainActivity : ComponentActivity() {
                         )
 
                         MovieSession(
-                            label = "Upcoming",
-                            movieList = upcomingMovies,
+                            label = "Top rated",
+                            movieList = topRatedMovies,
                             onClick = { movieClicked ->
 
                             }
@@ -136,7 +134,9 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MovieSession(
-    label: String, movieList: List<MovieDto>, onClick: (MovieDto) -> Unit
+    label: String,
+    movieList: List<MovieDto>,
+    onClick: (MovieDto) -> Unit
 ) {
 
     Column(

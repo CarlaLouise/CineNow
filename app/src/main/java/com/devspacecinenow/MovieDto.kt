@@ -6,7 +6,7 @@ data class MovieDto(
     val id: Int,
     val title: String,
     val overview: String,
-    @SerializedName("post_path")
+    @SerializedName("poster_path")
     val postPath: String,
 ){
     val posterFullPath: String
