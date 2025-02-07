@@ -14,13 +14,14 @@ fun CineNowApp() {
         composable(route = "movieList"){
             MovieListScreen(navController)
         }
-        composable(route = "movieDetail" + "/{itemId}",
+        composable(
+            route = "movieDetail" + "/{itemId}",
             arguments = listOf(navArgument("itemId"){
                 type = NavType.StringType
             })
         ){ backStackEntry ->
             val movieId = requireNotNull(backStackEntry.arguments?.getString("itemId"))
-            MovieDetailScreen(movieId)
+            MovieDetailScreen(movieId, navController)
         }
     }
 }
